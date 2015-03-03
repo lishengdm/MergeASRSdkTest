@@ -17,6 +17,7 @@ enum SettingType {
 var KEY_TEST_DOMAIN: String = "test_domain"
 var KEY_TEST_SAMPLE_RATE: String = "test_sample_rate"
 var KEY_TEST_NUMBER: String = "test_number"
+var KEY_SINGLE_TEST_FILE_NAME: String = "single_test_file_name"
 
 let TEST_SAMPLE_RATE_VALUE_ARRAY: [Int] = [8000, 16000, 0]
 let TEST_SAMPLE_RATE_NAME_ARRAY: [String] = ["8k", "16k", "8k && 16k"]
@@ -149,13 +150,13 @@ class ValuePickerTableViewController: UITableViewController, UITextFieldDelegate
 
     // MARK: - TextFieldDelegate
     
+    override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+        dismissKeyboard(currentSettingType, withCell: currentCell)
+    }
+    
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         dismissKeyboard(currentSettingType, withCell: currentCell)
         return false
-    }
-    
-    override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-        dismissKeyboard(currentSettingType, withCell: currentCell)
     }
     
     func dismissKeyboard(settingType: SettingType, withCell: UITableViewCell) {

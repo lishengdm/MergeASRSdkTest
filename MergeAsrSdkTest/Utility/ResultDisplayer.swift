@@ -17,9 +17,6 @@ class ResultDisplayer {
     var recognitionTime: String
     var memoryUsage: String
     var cpuUsage: String
-    var nluTriggerRate: String
-    var nluAccurateRate: String
-    var nluOnlineRate: String
     
     init() {
         accuracyRate = String()
@@ -29,9 +26,6 @@ class ResultDisplayer {
         recognitionTime = String()
         memoryUsage = String()
         cpuUsage = String()
-        nluTriggerRate = String()
-        nluAccurateRate = String()
-        nluOnlineRate = String()
     }
     
     func toString() -> String {

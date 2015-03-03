@@ -19,6 +19,7 @@ class TestConfig {
     var testType: TestType
     var testNumber: Int
     var testSampleRate: Int
+    var singleTestFileName: String?
 
     init() {
         testType = .Search

@@ -10,25 +10,19 @@
 	<string>MergeAsrSdkTest</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>10c430b7-138c-484d-95c7-5854316739ef++6986</key>
-		<string>https://svn.baidu.com/app/search/audio/trunk/ios-asr-sdk/trunk</string>
-		<key>b9e191d0-3251-468d-98e2-6e71b33e397e++5377</key>
-		<string>https://svn.baidu.com/ps-test/rank/trunk/audio/sdk_test/for_rd_use/ios/recognition_merge/MergeAsrSdkTest</string>
+		<key>9CE0FBD23DA918BCAF5D5C9BCC61E2276E10DFE2</key>
+		<string>https://svn.baidu.com/ps-test/rank</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>MergeAsrSdkTest.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>10c430b7-138c-484d-95c7-5854316739ef++6986</key>
-		<string>../../../Online-ASR/ios-asr-sdk</string>
-		<key>b9e191d0-3251-468d-98e2-6e71b33e397e++5377</key>
+		<key>9CE0FBD23DA918BCAF5D5C9BCC61E2276E10DFE2</key>
 		<string>../..</string>
 	</dict>
 	<key>IDESourceControlProjectRepositoryRootDictionary</key>
 	<dict>
-		<key>10c430b7-138c-484d-95c7-5854316739ef++6986</key>
-		<string>https://svn.baidu.com/app/search/audio</string>
-		<key>b9e191d0-3251-468d-98e2-6e71b33e397e++5377</key>
+		<key>9CE0FBD23DA918BCAF5D5C9BCC61E2276E10DFE2</key>
 		<string>https://svn.baidu.com/ps-test/rank</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
@@ -36,24 +30,24 @@
 	<key>IDESourceControlProjectVersion</key>
 	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>b9e191d0-3251-468d-98e2-6e71b33e397e++5377</string>
+	<string>9CE0FBD23DA918BCAF5D5C9BCC61E2276E10DFE2</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.subversion</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>10c430b7-138c-484d-95c7-5854316739ef++6986</string>
+			<string>9CE0FBD23DA918BCAF5D5C9BCC61E2276E10DFE2</string>
 			<key>IDESourceControlWCCName</key>
-			<string>ios-asr-sdk</string>
+			<string>MergeASRSdkTest</string>
 		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
-			<string>public.vcs.subversion</string>
+			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>b9e191d0-3251-468d-98e2-6e71b33e397e++5377</string>
+			<string>9CE0FBD23DA918BCAF5D5C9BCC61E2276E10DFE2</string>
 			<key>IDESourceControlWCCName</key>
-			<string>MergeAsrSdkTest</string>
+			<string>MergeASRSdkTest</string>
 		</dict>
 	</array>
 </dict>

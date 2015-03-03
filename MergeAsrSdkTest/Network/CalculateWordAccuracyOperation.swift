@@ -21,24 +21,27 @@ enum VTResponseError {
 let RESPONSE_ACCURACY_UNDEFINED: String = "-1"
 let RESPONSE_8K_ACCURACY_KEY: String = "8k_accuracy"
 let RESPONSE_16K_ACCURACY_KEY: String = "16k_accuracy"
+let INPUT_URL: String = "http://cp01-sys-razzjunheng-jxaibq423.cp01.baidu.com:8081/handle_sdk_result/handle_input_result.php"
+let SEARCH_URL: String = "http://cp01-sys-razzjunheng-jxaibq423.cp01.baidu.com:8081/handle_sdk_result/handle_search_result.php"
 
 class CalculateWordAccuracyOperation {
 
-    let remoteURL: String = "http://cp01-sys-razzjunheng-jxaibq423.cp01.baidu.com:8081/handle_sdk_result/handle_input_result.php"
     var queue: NSOperationQueue
     var sendContent: String
     var responseDelegate: VTResponseDelegate
+    var url: String
     
-    init(inQueue queue: NSOperationQueue, withContent: String, delegate: VTResponseDelegate) {
+    init(inQueue queue: NSOperationQueue, withContent: String, toUrl: String, delegate: VTResponseDelegate) {
         self.queue = queue
         self.sendContent = withContent
         self.responseDelegate = delegate
+        self.url = toUrl
     }
     
     func send() {
         let requestContent: String = String(format: "recognition_result=%@", sendContent)
         let requestData: NSData = requestContent.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!
-        var requestEntity: NSMutableURLRequest = NSMutableURLRequest(URL: NSURL(string: remoteURL)!)
+        var requestEntity: NSMutableURLRequest = NSMutableURLRequest(URL: NSURL(string: self.url)!)
         requestEntity.HTTPMethod = "POST"
         requestEntity.HTTPBody = requestData
         
@@ -51,7 +54,7 @@ class CalculateWordAccuracyOperation {
                 var jsonError: NSError?
                 let responseDic: [String: String]? = NSJSONSerialization.JSONObjectWithData(returnData, options: NSJSONReadingOptions.MutableLeaves, error: &jsonError) as? [String: String]
                 if let dic = responseDic {
-                    println("get dic success")
+                    println("get calculate result from server success")
                     for (key, value) in dic {
                         println("\(key) && \(value)")
                     }

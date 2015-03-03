@@ -21,7 +21,7 @@ class SettingTableViewController: UITableViewController {
     let INDEX_CONTROLLER_DIC: [Int: DestControllertType] = [0: .TypeValueEdit, 1: .TypeValuePicker, 2: .TypeValuePicker]
     
     // segue destinationViewController type define
-    enum DestControllertType{
+    enum DestControllertType {
         case TypeValuePicker
         case TypeValueEdit
     }
