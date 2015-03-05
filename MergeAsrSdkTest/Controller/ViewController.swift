@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController, UITextFieldDelegate {
+class ViewController: UIViewController, UITextFieldDelegate, BDRecognizerViewDelegate {
 
     // ui ref
     @IBOutlet var mScrollView: UIScrollView!
@@ -19,6 +19,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
     
     let KEYBOARD_OFFSET: Double = 50
     let mUserDefault: NSUserDefaults = NSUserDefaults.standardUserDefaults()
+    var recognizerViewController: BDRecognizerViewController!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,6 +27,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         self.mTextViewFileName.delegate = self
         if let fileName = mUserDefault.valueForKey(KEY_SINGLE_TEST_FILE_NAME) as? String {
             self.mTextViewFileName.placeholder = fileName
+            self.mTextViewFileName.text = fileName
         }
     }
 
@@ -105,7 +107,30 @@ class ViewController: UIViewController, UITextFieldDelegate {
         return type
     }
     
+    func setUIDialogParams(paramsObject: BDRecognizerViewParamsObject) {
+        paramsObject.apiKey = "8MAxI5o7VjKSZOKeBzS4XtxO"
+        paramsObject.secretKey = "Ge5GXVdGQpaxOmLzc8fOM8309ATCz9Ha"
+        paramsObject.licenseFilePath = NSBundle.mainBundle().pathForResource("bdasr_license", ofType: "dat")
+        paramsObject.datFilePath = NSBundle.mainBundle().pathForResource("s_1", ofType:"")
+        //        paramsObject.LMDatFilePath = NSBundle.mainBundle().pathForResource("s_2_InputMethod", ofType:"")
+        
+        //        paramsObject.recogPropList = [20000]
+        paramsObject.isShowTipAfter3sSilence = true;
+        paramsObject.tipsList = ["我要记账", "买苹果花了十块钱", "买牛奶五块钱"]
+    }
+    
     // MARK: - IBAction
+    
+    @IBAction func startUITest(sender: AnyObject) {
+        let paramsObject: BDRecognizerViewParamsObject = BDRecognizerViewParamsObject()
+        // set paramsObject
+        setUIDialogParams(paramsObject)
+        // init ui view controller
+        recognizerViewController = BDRecognizerViewController(origin: CGPointMake(20, 64), withTheme: BDTheme.defaultTheme())
+        recognizerViewController.delegate = self
+        recognizerViewController.enableFullScreenMode = false
+        recognizerViewController.startWithParams(paramsObject)
+    }
     
     @IBAction func mBtnStartTest(sender: AnyObject) {
         startTestTask(false)
@@ -189,5 +214,49 @@ class ViewController: UIViewController, UITextFieldDelegate {
         mTextViewFileName.hidden = false
         mButtonStartSingleFileTest.hidden = false
     }
+    
+    // MARK: - MVoiceRecognitionClientDelegate
+    func onEndWithViews(aBDRecognizerViewController: BDRecognizerViewController, withResults aResults: [AnyObject]) {
+//        var s = aResults[0] as String
+        println("over \(aResults)")
+    }
+    
+    func onRecordDataArrived(recordData: NSData, sampleRate: Int) {}
+    
+    /**
+    * @brief 录音结束
+    */
+    func onRecordEnded() {}
+    
+    /**
+    * @brief 返回中间识别结果
+    *
+    * @param results
+    *            中间识别结果
+    */
+    func onPartialResults(results: String) {}
+    
+    /**
+    * @brief 发生错误
+    *
+    * @param errorCode
+    *            错误码
+    */
+    func onError(errorCode: Int) {}
+    
+    /**
+    * @brief 提示语出现
+    */
+    func onTipsShow() {}
+    
+    func onSpeakFinish() {}
+    
+    func onRetry() {}
+    
+    /**
+    * @brief 弹窗关闭
+    */
+    func onClose() {}
+    
 }
 

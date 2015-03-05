@@ -34,6 +34,10 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
     
     let MAX_RETRY_TIME: Int = 5
     
+    // io file name
+    var RECO_RESULT_OUTPUT_FILE_NAME = "recognition_result.txt"
+    var ERROR_OUTPUT_FILE_NAME = "error.txt"
+    
     // ui ref definition
     @IBOutlet var mLabelAnswerRegion: UILabel!
     @IBOutlet var mLabelAnswerHint: UILabel!
@@ -97,6 +101,10 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
     // some control variables
     var mIsFirstUpdate: Bool = true
     var mIsSingleFileTest: Bool = false
+    
+    // output file definenation
+    var recoResultOutputFileHandler: BDVRFileWriter!
+    var errorOutputFileHandler: BDVRFileWriter!
     
     // MARK: - Override UIView
     
@@ -202,9 +210,11 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
         } else {
             mIsSingleFileTest = false
         }
+        
+        // init file handler
+        recoResultOutputFileHandler = BDVRFileWriter(fileName: RECO_RESULT_OUTPUT_FILE_NAME)
+        errorOutputFileHandler = BDVRFileWriter(fileName: ERROR_OUTPUT_FILE_NAME)
     }
-    
-    
     
     func startOneRoundAutoTest(currentSampleRate: Int) {
         initOneRoundValues()
@@ -249,10 +259,18 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
         println("=============== one recognition operation start ===============")
         beforeOneRoundRcognition()
         
+        BDVoiceRecognitionClient.sharedInstance().setApiKey("8MAxI5o7VjKSZOKeBzS4XtxO", withSecretKey: "Ge5GXVdGQpaxOmLzc8fOM8309ATCz9Ha")
+        setClientConfig()
+        var status = Int(mVoiceRecognitionFileRecognizer!.startFileRecognition())
+        if status != Int(EVoiceRecognitionStartWorking.value) {
+            println("File recognizer start working failed, status is: " + String(status))
+        }
+    }
+    
+    func setClientConfig() {
         let fileFullPath: String = getFullFilePath(mCurrentTestFileDirName, fileName: mCurrentFileName)
         let propList: [Int] = generatePropList(mTestConfig.testType)
         var cid: Int = 0
-        BDVoiceRecognitionClient.sharedInstance().setApiKey("8MAxI5o7VjKSZOKeBzS4XtxO", withSecretKey: "Ge5GXVdGQpaxOmLzc8fOM8309ATCz9Ha")
         println("full file path is: " + fileFullPath)
         // init the file recognizer
         mVoiceRecognitionFileRecognizer = BDVRFileRecognizer(fileRecognizerWithFilePath: fileFullPath, sampleRate: mCurrentSampleRate, propertyGroup: propList, cityID: cid, delegate: self)
@@ -262,6 +280,8 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
         mVoiceRecognitionFileRecognizer!.licenseFilePath = NSBundle.mainBundle().pathForResource("bdasr_license", ofType: "dat")
         mVoiceRecognitionFileRecognizer!.datFilePath = NSBundle.mainBundle().pathForResource("s_1", ofType: "")
         
+        println(mVoiceRecognitionFileRecognizer!.datFilePath)
+        println(mVoiceRecognitionFileRecognizer!.licenseFilePath)
         if mTestConfig.testType == TestType.Input {
             // input
             mVoiceRecognitionFileRecognizer!.LMDatFilePath = NSBundle.mainBundle().pathForResource("s_2_InputMethod", ofType: "")
@@ -273,17 +293,15 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
             BDVoiceRecognitionClient.sharedInstance().setResourceType(RESOURCE_TYPE_NLU)
         } else {
             // search
-            mVoiceRecognitionFileRecognizer!.LMDatFilePath = NSBundle.mainBundle().pathForResource("s_2_Navi", ofType: "")
             BDVoiceRecognitionClient.sharedInstance().setResourceType(RESOURCE_TYPE_NONE)
         }
         // set strategy
-        mVoiceRecognitionFileRecognizer!.recognitionStrategy = Int32(RECOGNITION_STRATEGY_OFFLINE_PRI.value)
-        // start file recognition
-        var status = Int(mVoiceRecognitionFileRecognizer!.startFileRecognition())
+//        mVoiceRecognitionFileRecognizer!.recognitionStrategy = Int32(RECOGNITION_STRATEGY_ONLINE.value)
         
-        if status != Int(EVoiceRecognitionStartWorking.value) {
-            println("File recognizer start working failed, status is: " + String(status))
-        }
+        mVoiceRecognitionFileRecognizer!.recogGrammSlot = ["$name_CORE": "李胜\n",
+                                        "$song_CORE": "最后的战役\n",
+                                        "$app_CORE": "百度浏览器\n",
+                                        "$artist_CORE": "周杰伦\n"]
     }
     
     func generatePropList(type: TestType) -> [Int] {
@@ -458,6 +476,9 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
         if let date = mRecognitionTimeCounter.finishValue as? NSDate {
             mRecognitionTimeCounter.plusOneRoundValue(date.timeIntervalSinceDate(mRecognitionTimeCounter.startValue as NSDate))
         }
+        
+        // write result to output file
+        recoResultOutputFileHandler.writeLine(mCurrentFileName + ":" + mCurrentRecognition)
     }
     
     func afterOneRoundRecognition(isFinishSuccessFully: Bool) {
@@ -693,22 +714,28 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
     
     func VoiceRecognitionClientErrorStatus(aStatus: Int, subStatus aSubStatus: Int) {
         println("error happens")
+        var errorInfo: String = mCurrentFileName + ": "
         switch aStatus {
         case Int(EVoiceRecognitionClientErrorStatusClassVDP.value):
+            errorInfo += ("audio process happens: " + String(aSubStatus))
             println("audio process happens: " + String(aSubStatus))
             break
         case Int(EVoiceRecognitionClientErrorStatusClassRecord.value):
+            errorInfo += ("audio record error happens: " + String(aSubStatus))
             println("audio record error happens: " + String(aSubStatus))
             break
         case Int(EVoiceRecognitionClientErrorStatusClassLocalNet.value):
+            errorInfo += ("network error: " + String(aSubStatus))
             println("network error: " + String(aSubStatus))
             break
         case Int(EVoiceRecognitionClientErrorStatusClassServerNet.value):
-            println("server error: " + String(aSubStatus))
+            errorInfo += ("server error: " + String(aSubStatus))
+            println("engine error: " + String(aSubStatus))
             break
         default:
             break
         }
+        errorOutputFileHandler.writeLine(errorInfo)
     }
     
     func VoiceRecognitionClientNetWorkStatus(aStatus: Int) {

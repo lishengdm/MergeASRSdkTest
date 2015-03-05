@@ -131,7 +131,7 @@ enum TVoiceRecognitionClientErrorStatus
     EVoiceRecognitionClientErrorOfflineEngineLMDataFileNotExist,            // 导航模型文件不存在
     EVoiceRecognitionClientErrorOfflineEngineSetPropertyFailed,             // 设置识别垂类失败
     EVoiceRecognitionClientErrorOfflineEngineFeedAudioDataFailed,           // 识别失败
-    EVoiceRecognitionClientErrorOfflineEngineStopRecognitionFailed,         // 识别失败
+    EVoiceRecognitionClientErrorOfflineEngineRecognizeFailed,               // 识别失败
 };
 
 // 枚举 - 语音识别类型

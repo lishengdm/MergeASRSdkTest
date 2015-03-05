@@ -97,6 +97,16 @@
                                             <action selector="startSingleFileTest:" destination="BYZ-38-t0r" eventType="touchUpInside" id="1r7-ll-BH3"/>
                                         </connections>
                                     </button>
+                                    <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7gy-ny-4Wm">
+                                        <rect key="frame" x="180" y="332" width="30" height="30"/>
+                                        <color key="backgroundColor" red="0.80000001190000003" green="1" blue="0.40000000600000002" alpha="1" colorSpace="calibratedRGB"/>
+                                        <state key="normal" title="UI">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="startUITest:" destination="BYZ-38-t0r" eventType="touchUpInside" id="YhY-HX-qoh"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <constraints>
                                     <constraint firstItem="Dvm-GY-xfo" firstAttribute="top" secondItem="uHP-CX-nQd" secondAttribute="bottom" constant="20" id="1Kg-yN-Qla"/>
@@ -104,6 +114,7 @@
                                     <constraint firstItem="uHP-CX-nQd" firstAttribute="width" secondItem="Dvm-GY-xfo" secondAttribute="width" id="9yZ-x3-Hx2"/>
                                     <constraint firstAttribute="trailing" secondItem="uHP-CX-nQd" secondAttribute="trailing" constant="20" id="BnR-0T-BCH"/>
                                     <constraint firstItem="uHP-CX-nQd" firstAttribute="top" secondItem="bhW-i0-yug" secondAttribute="top" constant="20" id="DeI-ji-a5Q"/>
+                                    <constraint firstItem="7gy-ny-4Wm" firstAttribute="leading" secondItem="rWu-FV-2HI" secondAttribute="trailing" constant="20" id="Diw-LU-AF5"/>
                                     <constraint firstItem="uHP-CX-nQd" firstAttribute="leading" secondItem="bhW-i0-yug" secondAttribute="leading" constant="20" id="JHo-aI-opg"/>
                                     <constraint firstAttribute="trailing" secondItem="1mG-po-VzX" secondAttribute="trailing" constant="20" id="KBQ-oh-9fO"/>
                                     <constraint firstItem="5sd-LA-oNd" firstAttribute="top" secondItem="Dvm-GY-xfo" secondAttribute="bottom" constant="20" id="KMF-NN-X8u"/>
@@ -122,6 +133,7 @@
                                     <constraint firstItem="5sd-LA-oNd" firstAttribute="leading" secondItem="Dvm-GY-xfo" secondAttribute="leading" constant="-9" id="lj2-JK-0TJ"/>
                                     <constraint firstItem="uHP-CX-nQd" firstAttribute="leading" secondItem="Dvm-GY-xfo" secondAttribute="leading" id="mLG-lS-QrR"/>
                                     <constraint firstItem="1mG-po-VzX" firstAttribute="leading" secondItem="rWu-FV-2HI" secondAttribute="trailing" constant="20" id="qEO-x5-SA8"/>
+                                    <constraint firstItem="7gy-ny-4Wm" firstAttribute="baseline" secondItem="rWu-FV-2HI" secondAttribute="baseline" id="qaN-Eb-nV3"/>
                                     <constraint firstItem="uHP-CX-nQd" firstAttribute="top" secondItem="bhW-i0-yug" secondAttribute="top" constant="10" id="rni-2S-rUS"/>
                                     <constraint firstItem="ozU-cd-00J" firstAttribute="leading" secondItem="1mG-po-VzX" secondAttribute="trailing" constant="10" id="u7S-wc-H68"/>
                                     <constraint firstItem="uHP-CX-nQd" firstAttribute="leading" secondItem="bhW-i0-yug" secondAttribute="leading" constant="10" id="x1k-ln-mcN"/>

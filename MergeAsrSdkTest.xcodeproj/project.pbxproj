@@ -21,8 +21,9 @@
 		1A25A5A61A8675730093610A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A25A5A51A8675730093610A /* CoreGraphics.framework */; };
 		1A25A5A81A86757C0093610A /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A25A5A71A86757C0093610A /* CoreText.framework */; };
 		1A25A5EC1A8908A80093610A /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A25A5EB1A8908A80093610A /* CoreFoundation.framework */; };
+		1A2A28961AA830FA00D7A13B /* libBDVoiceRecognitionClientWithUI.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A2A28951AA830FA00D7A13B /* libBDVoiceRecognitionClientWithUI.a */; };
+		1A2A28B91AA83EFA00D7A13B /* BDVoiceRecognitionClientResources in Resources */ = {isa = PBXBuildFile; fileRef = 1A2A28B81AA83EFA00D7A13B /* BDVoiceRecognitionClientResources */; };
 		1A35ED551AA40C5700992D2A /* bdasr_license.dat in Resources */ = {isa = PBXBuildFile; fileRef = 1A35ED541AA40C5700992D2A /* bdasr_license.dat */; };
-		1A35ED571AA40E2600992D2A /* libBDVoiceRecognitionClient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A35ED561AA40E2600992D2A /* libBDVoiceRecognitionClient.a */; };
 		1A6C48EE1A837D6400DA6FEA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1A6C48EC1A837D6400DA6FEA /* Main.storyboard */; };
 		1A6C48F01A83CEE300DA6FEA /* SingleEditorTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A6C48EF1A83CEE300DA6FEA /* SingleEditorTableViewCell.swift */; };
 		1A83AB111A90DCD8000CEEE3 /* CADebugMacros.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A83AB0A1A90DCD8000CEEE3 /* CADebugMacros.cpp */; };
@@ -33,6 +34,9 @@
 		1A83AB1C1A90DCFE000CEEE3 /* TTTAttributedLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A83AB1B1A90DCFE000CEEE3 /* TTTAttributedLabel.m */; };
 		1A83AB1E1A90DD0C000CEEE3 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A83AB1D1A90DD0C000CEEE3 /* ViewController.swift */; };
 		1A95A83F1A8A748B00D5E491 /* TestInfoCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A95A83E1A8A748B00D5E491 /* TestInfoCounter.swift */; };
+		1A9CC0101AA8AFD800A02E7B /* s_1 in Resources */ = {isa = PBXBuildFile; fileRef = 1A9CC00D1AA8AFCF00A02E7B /* s_1 */; };
+		1A9CC0111AA8AFD800A02E7B /* s_2_InputMethod in Resources */ = {isa = PBXBuildFile; fileRef = 1A9CC00E1AA8AFCF00A02E7B /* s_2_InputMethod */; };
+		1A9CC0121AA8AFD800A02E7B /* s_2_Navi in Resources */ = {isa = PBXBuildFile; fileRef = 1A9CC00F1AA8AFCF00A02E7B /* s_2_Navi */; };
 		1AA8D7D31A831A9800FE1BCB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AA8D7D21A831A9800FE1BCB /* AppDelegate.swift */; };
 		1AA8D7DA1A831A9800FE1BCB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1AA8D7D91A831A9800FE1BCB /* Images.xcassets */; };
 		1AA8D7DD1A831A9800FE1BCB /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1AA8D7DB1A831A9800FE1BCB /* LaunchScreen.xib */; };
@@ -73,11 +77,9 @@
 		1A25A5A71A86757C0093610A /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		1A25A5BF1A8677460093610A /* MergeAsrSdkTest-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MergeAsrSdkTest-Bridging-Header.h"; sourceTree = "<group>"; };
 		1A25A5EB1A8908A80093610A /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
-		1A35ED511AA40C4800992D2A /* s_1 */ = {isa = PBXFileReference; lastKnownFileType = file; name = s_1; path = MergeAsrSdkTest/Libs/dat/s_1; sourceTree = SOURCE_ROOT; };
-		1A35ED521AA40C4800992D2A /* s_2_InputMethod */ = {isa = PBXFileReference; lastKnownFileType = file; name = s_2_InputMethod; path = MergeAsrSdkTest/Libs/dat/s_2_InputMethod; sourceTree = SOURCE_ROOT; };
-		1A35ED531AA40C4800992D2A /* s_2_Navi */ = {isa = PBXFileReference; lastKnownFileType = file; name = s_2_Navi; path = MergeAsrSdkTest/Libs/dat/s_2_Navi; sourceTree = SOURCE_ROOT; };
+		1A2A28951AA830FA00D7A13B /* libBDVoiceRecognitionClientWithUI.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libBDVoiceRecognitionClientWithUI.a; path = MergeAsrSdkTest/Libs/libBDVoiceRecognitionClientWithUI.a; sourceTree = "<group>"; };
+		1A2A28B81AA83EFA00D7A13B /* BDVoiceRecognitionClientResources */ = {isa = PBXFileReference; lastKnownFileType = folder; name = BDVoiceRecognitionClientResources; path = MergeAsrSdkTest/BDVoiceRecognitionClientResources; sourceTree = "<group>"; };
 		1A35ED541AA40C5700992D2A /* bdasr_license.dat */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = bdasr_license.dat; path = MergeAsrSdkTest/Libs/License/bdasr_license.dat; sourceTree = SOURCE_ROOT; };
-		1A35ED561AA40E2600992D2A /* libBDVoiceRecognitionClient.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libBDVoiceRecognitionClient.a; path = MergeAsrSdkTest/Libs/libBDVoiceRecognitionClient.a; sourceTree = "<group>"; };
 		1A6C48ED1A837D6400DA6FEA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		1A6C48EF1A83CEE300DA6FEA /* SingleEditorTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SingleEditorTableViewCell.swift; path = UIElement/SingleEditorTableViewCell.swift; sourceTree = "<group>"; };
 		1A83AAFF1A90DC4A000CEEE3 /* BDRecognizerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BDRecognizerViewController.h; path = MergeAsrSdkTest/Libs/BDRecognizerViewController.h; sourceTree = "<group>"; };
@@ -104,6 +106,9 @@
 		1A83AB1B1A90DCFE000CEEE3 /* TTTAttributedLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TTTAttributedLabel.m; path = Utility/TTTAttributedLabel/TTTAttributedLabel.m; sourceTree = "<group>"; };
 		1A83AB1D1A90DD0C000CEEE3 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ViewController.swift; path = Controller/ViewController.swift; sourceTree = "<group>"; };
 		1A95A83E1A8A748B00D5E491 /* TestInfoCounter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TestInfoCounter.swift; path = Utility/TestInfoCounter.swift; sourceTree = "<group>"; };
+		1A9CC00D1AA8AFCF00A02E7B /* s_1 */ = {isa = PBXFileReference; lastKnownFileType = file; name = s_1; path = MergeAsrSdkTest/Libs/dat/s_1; sourceTree = "<group>"; };
+		1A9CC00E1AA8AFCF00A02E7B /* s_2_InputMethod */ = {isa = PBXFileReference; lastKnownFileType = file; name = s_2_InputMethod; path = MergeAsrSdkTest/Libs/dat/s_2_InputMethod; sourceTree = "<group>"; };
+		1A9CC00F1AA8AFCF00A02E7B /* s_2_Navi */ = {isa = PBXFileReference; lastKnownFileType = file; name = s_2_Navi; path = MergeAsrSdkTest/Libs/dat/s_2_Navi; sourceTree = "<group>"; };
 		1AA8D7CD1A831A9800FE1BCB /* MergeAsrSdkTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MergeAsrSdkTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AA8D7D11A831A9800FE1BCB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1AA8D7D21A831A9800FE1BCB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -132,6 +137,7 @@
 				1A25A5A61A8675730093610A /* CoreGraphics.framework in Frameworks */,
 				1A25A5A41A86756A0093610A /* GLKit.framework in Frameworks */,
 				1A25A5A21A8675630093610A /* QuartzCore.framework in Frameworks */,
+				1A2A28961AA830FA00D7A13B /* libBDVoiceRecognitionClientWithUI.a in Frameworks */,
 				1A25A5A01A86755C0093610A /* OpenGLES.framework in Frameworks */,
 				1A25A59E1A8675510093610A /* CoreLocation.framework in Frameworks */,
 				1A25A59C1A8675480093610A /* CFNetwork.framework in Frameworks */,
@@ -140,7 +146,6 @@
 				1A25A5961A86752C0093610A /* SystemConfiguration.framework in Frameworks */,
 				1A25A5941A8675220093610A /* AVFoundation.framework in Frameworks */,
 				1A25A5921A86751D0093610A /* AudioToolbox.framework in Frameworks */,
-				1A35ED571AA40E2600992D2A /* libBDVoiceRecognitionClient.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -154,6 +159,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1A1D1E531AA6B18E000F9DD5 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				1A2A28B81AA83EFA00D7A13B /* BDVoiceRecognitionClientResources */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
 		1A25A5901A8674A90093610A /* Framework */ = {
 			isa = PBXGroup;
 			children = (
@@ -209,8 +222,8 @@
 		1A25A5D31A867B4C0093610A /* Libs */ = {
 			isa = PBXGroup;
 			children = (
-				1A35ED561AA40E2600992D2A /* libBDVoiceRecognitionClient.a */,
-				1A95E1A01A91D9D5002939DA /* dat */,
+				1A9CC00C1AA8AFC300A02E7B /* data */,
+				1A2A28951AA830FA00D7A13B /* libBDVoiceRecognitionClientWithUI.a */,
 				1A95E1A41A91D9D5002939DA /* License */,
 				1A83AAFF1A90DC4A000CEEE3 /* BDRecognizerViewController.h */,
 				1A83AB001A90DC4A000CEEE3 /* BDRecognizerViewDelegate.h */,
@@ -233,16 +246,6 @@
 			name = UIElement;
 			sourceTree = "<group>";
 		};
-		1A95E1A01A91D9D5002939DA /* dat */ = {
-			isa = PBXGroup;
-			children = (
-				1A35ED511AA40C4800992D2A /* s_1 */,
-				1A35ED521AA40C4800992D2A /* s_2_InputMethod */,
-				1A35ED531AA40C4800992D2A /* s_2_Navi */,
-			);
-			path = dat;
-			sourceTree = "<group>";
-		};
 		1A95E1A41A91D9D5002939DA /* License */ = {
 			isa = PBXGroup;
 			children = (
@@ -251,9 +254,20 @@
 			path = License;
 			sourceTree = "<group>";
 		};
+		1A9CC00C1AA8AFC300A02E7B /* data */ = {
+			isa = PBXGroup;
+			children = (
+				1A9CC00D1AA8AFCF00A02E7B /* s_1 */,
+				1A9CC00E1AA8AFCF00A02E7B /* s_2_InputMethod */,
+				1A9CC00F1AA8AFCF00A02E7B /* s_2_Navi */,
+			);
+			name = data;
+			sourceTree = "<group>";
+		};
 		1AA8D7C41A831A9800FE1BCB = {
 			isa = PBXGroup;
 			children = (
+				1A1D1E531AA6B18E000F9DD5 /* Resources */,
 				1A25A5D31A867B4C0093610A /* Libs */,
 				1A25A5901A8674A90093610A /* Framework */,
 				1AA8D7CF1A831A9800FE1BCB /* MergeAsrSdkTest */,
@@ -438,6 +452,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1A9CC0101AA8AFD800A02E7B /* s_1 in Resources */,
+				1A9CC0111AA8AFD800A02E7B /* s_2_InputMethod in Resources */,
+				1A9CC0121AA8AFD800A02E7B /* s_2_Navi in Resources */,
+				1A2A28B91AA83EFA00D7A13B /* BDVoiceRecognitionClientResources in Resources */,
 				1A6C48EE1A837D6400DA6FEA /* Main.storyboard in Resources */,
 				1AA8D7DD1A831A9800FE1BCB /* LaunchScreen.xib in Resources */,
 				1A35ED551AA40C5700992D2A /* bdasr_license.dat in Resources */,
