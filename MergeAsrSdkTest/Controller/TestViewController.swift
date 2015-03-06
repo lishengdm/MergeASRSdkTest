@@ -257,6 +257,7 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
     
     func oneRoundRecognitionProcess() {
         println("=============== one recognition operation start ===============")
+//        NSThread.sleepForTimeInterval(1)
         beforeOneRoundRcognition()
         
         BDVoiceRecognitionClient.sharedInstance().setApiKey("8MAxI5o7VjKSZOKeBzS4XtxO", withSecretKey: "Ge5GXVdGQpaxOmLzc8fOM8309ATCz9Ha")
@@ -297,6 +298,9 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
         }
         // set strategy
 //        mVoiceRecognitionFileRecognizer!.recognitionStrategy = Int32(RECOGNITION_STRATEGY_ONLINE.value)
+        
+        // set time out
+//        BDVoiceRecognitionClient.sharedInstance().setOnlineWaitTime(1)
         
         mVoiceRecognitionFileRecognizer!.recogGrammSlot = ["$name_CORE": "李胜\n",
                                         "$song_CORE": "最后的战役\n",

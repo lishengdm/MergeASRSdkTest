@@ -112,7 +112,7 @@ class ViewController: UIViewController, UITextFieldDelegate, BDRecognizerViewDel
         paramsObject.secretKey = "Ge5GXVdGQpaxOmLzc8fOM8309ATCz9Ha"
         paramsObject.licenseFilePath = NSBundle.mainBundle().pathForResource("bdasr_license", ofType: "dat")
         paramsObject.datFilePath = NSBundle.mainBundle().pathForResource("s_1", ofType:"")
-        //        paramsObject.LMDatFilePath = NSBundle.mainBundle().pathForResource("s_2_InputMethod", ofType:"")
+        // paramsObject.LMDatFilePath = NSBundle.mainBundle().pathForResource("s_2_InputMethod", ofType:"")
         
         //        paramsObject.recogPropList = [20000]
         paramsObject.isShowTipAfter3sSilence = true;
