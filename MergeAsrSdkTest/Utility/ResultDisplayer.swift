@@ -29,6 +29,11 @@ class ResultDisplayer {
     }
     
     func toString() -> String {
-        return accuracyRate + "\n" + successRate + "\n" + recognitionTime + "\n" + responseTime
+        return "准确率:" + accuracyRate + "\n"
+            + "识别率:" + successRate + "\n"
+            + "识别时间:" + recognitionTime + "\n"
+            + "响应时间:" + responseTime + "\n"
+            + "内存usage:" + memoryUsage + "\n"
+            + "cpu usage:" + cpuUsage + "\n"
     }
 }

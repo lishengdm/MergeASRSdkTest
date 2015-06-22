@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Charts
 
 class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTResponseDelegate {
 
@@ -32,7 +33,7 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
     let TEST_CONFIG_DOMAIN_INPUT: Int = 20000
     let TEST_CONFIG_DOMAIN_DOMAIN: Int = -1
     
-    let MAX_RETRY_TIME: Int = 5
+    let MAX_RETRY_TIME: Int = 3
     
     // io file name
     var RECO_RESULT_OUTPUT_FILE_NAME = "recognition_result.txt"
@@ -75,22 +76,25 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
     
     // test info counter
     lazy var mTrafficCounter: TestInfoCounter = TestInfoCounter()
-    lazy var mRecognitionTimeCounter: TestInfoCounter = TestInfoCounter()
     lazy var mSuccessRateCounter: TestInfoCounter = TestInfoCounter()
     lazy var mAccurateRateCounter: TestInfoCounter = TestInfoCounter()
-    lazy var mResponseTimeCounter: TestInfoCounter = TestInfoCounter()
     lazy var mNluTriggeredCounter: TestInfoCounter = TestInfoCounter()
     lazy var mNluAccurateCounter: TestInfoCounter = TestInfoCounter()
     lazy var mNluOnlineResolveCounter: TestInfoCounter = TestInfoCounter()
+    lazy var mRecognitionTimeCounter: TestInfoCounter = TestInfoCounter(needHistory: true)
+    lazy var mResponseTimeCounter: TestInfoCounter = TestInfoCounter(needHistory: true)
+    lazy var mMemCounter: TestInfoCounter = TestInfoCounter(needHistory: true)
+    lazy var mCpuCounter: TestInfoCounter = TestInfoCounter(needHistory: true)
     
     lazy var mTestSum: TestSummarize = TestSummarize()
+    lazy var lastVersonData: LastVersionData = LastVersionData()
     var m8kDisplayer: ResultDisplayer?
     var m16kDisplayer: ResultDisplayer?
     
     // input recognition array
     lazy var mUploadContent: String = String()
-    var mInputRecognitionResultsJsonArray: [String]?
-    var mUploadRecognitionResultsJsonObject: [String: String]?
+    lazy var mInputRecognitionResultsJsonArray: [String] = [String]()
+    lazy var mUploadJson: [String: AnyObject] = [String: AnyObject]()
     
     // test queue
     lazy var mTestTaskQueue: NSOperationQueue = NSOperationQueue()
@@ -106,6 +110,8 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
     var recoResultOutputFileHandler: BDVRFileWriter!
     var errorOutputFileHandler: BDVRFileWriter!
     
+    var checkPerformanceThread: CheckPerformanceThread?
+    
     // MARK: - Override UIView
     
     override func viewDidLoad() {
@@ -115,6 +121,10 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
             return
         }
         startOneRoundTask()
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        self.tabBarController?.tabBar.hidden = true
     }
     
     override func didReceiveMemoryWarning() {
@@ -159,7 +169,9 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
             // answer file ref
             let answerFilePath = documentDir.stringByAppendingPathComponent("voicerecognition").stringByAppendingPathComponent(fileName)
             // load answer
-            let answerFileContent: String? = String(contentsOfFile: answerFilePath, encoding:NSUTF8StringEncoding, error: nil)
+            let cfEnc = CFStringEncodings.GB_18030_2000
+            let gb2132Enc = CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(cfEnc.rawValue))
+            let answerFileContent: String? = String(contentsOfFile: answerFilePath, encoding:gb2132Enc, error: nil)
             if let content = answerFileContent {
                 let lines: [String] = content.componentsSeparatedByString("\n")
                 for line in lines {
@@ -171,11 +183,11 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
                     }
                 }
             }
-            
+
             // load file array
             let fileDirPath = documentDir.stringByAppendingPathComponent("voicerecognition").stringByAppendingPathComponent(dirName)
             
-            let fileListOfDir: [String] = NSFileManager.defaultManager().contentsOfDirectoryAtPath(fileDirPath, error: nil) as [String]
+            let fileListOfDir: [String] = NSFileManager.defaultManager().contentsOfDirectoryAtPath(fileDirPath, error: nil) as! [String]
             for fileItem in fileListOfDir {
                 if fileItem.pathExtension.lowercaseString == "pcm" {
                     fileArray.append(fileItem)
@@ -189,17 +201,16 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
     func startOneRoundTask() {
         beforeOneRoundTask()
         switch mTestConfig.testSampleRate {
-        case TEST_CONFIG_SAMPLERATE_16K:
-            startOneRoundAutoTest(TEST_CONFIG_SAMPLERATE_16K)
-        default:
-            // include 2 situations, 1: user select only 8k; 2: user select 8k && 16k, which would test 8k first
-            startOneRoundAutoTest(TEST_CONFIG_SAMPLERATE_8K)
+            case TEST_CONFIG_SAMPLERATE_16K:
+                startOneRoundAutoTest(TEST_CONFIG_SAMPLERATE_16K)
+            default:
+                // include 2 situations, 1: user select only 8k; 2: user select 8k && 16k, which would test 8k first
+                startOneRoundAutoTest(TEST_CONFIG_SAMPLERATE_8K)
         }
     }
     
     func beforeOneRoundTask() {
         mTestTaskQueue.maxConcurrentOperationCount = 1
-        mUploadRecognitionResultsJsonObject = [String: String]()
 
         updateUI("准确率: ", label: mLabelAccuracyRateHint)
         updateUI("识别率: ", label: mLabelSuccessRateHint)
@@ -214,10 +225,11 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
         // init file handler
         recoResultOutputFileHandler = BDVRFileWriter(fileName: RECO_RESULT_OUTPUT_FILE_NAME)
         errorOutputFileHandler = BDVRFileWriter(fileName: ERROR_OUTPUT_FILE_NAME)
+        
     }
     
     func startOneRoundAutoTest(currentSampleRate: Int) {
-        initOneRoundValues()
+        initOneSampleValues()
         switch currentSampleRate {
         case TEST_CONFIG_SAMPLERATE_8K:
             mCurrentFileArray = mFileArray8k
@@ -238,18 +250,30 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
         self.startOneRoundRecognition()
     }
     
-    func initOneRoundValues() {
+    func initOneSampleValues() {
         mRecognitionTimeCounter.resetCounter()
         mResponseTimeCounter.resetCounter()
         mSuccessRateCounter.resetCounter()
         mAccurateRateCounter.resetCounter()
+        mMemCounter.resetCounter()
+        mCpuCounter.resetCounter()
+        mTrafficCounter.resetCounter()
+        if mTestConfig.testType == TestType.Domain {
+            mNluAccurateCounter.resetCounter()
+            mNluOnlineResolveCounter.resetCounter()
+            mNluTriggeredCounter.resetCounter()
+        }
         
         mCurrentFileIndex = 0
-        mInputRecognitionResultsJsonArray = [String]()
+        
+        // performance thread
+        self.checkPerformanceThread = CheckPerformanceThread(mem: self.mMemCounter, cpu: self.mCpuCounter)
+//        self.checkPerformanceThread!.start()
+
     }
     
     func startOneRoundRecognition() {
-        var oneRoundRecogntionOperation: NSBlockOperation = NSBlockOperation({
+        var oneRoundRecogntionOperation: NSBlockOperation = NSBlockOperation(block: {
             self.oneRoundRecognitionProcess()
         })
         mTestTaskQueue.addOperation(oneRoundRecogntionOperation)
@@ -257,10 +281,9 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
     
     func oneRoundRecognitionProcess() {
         println("=============== one recognition operation start ===============")
-//        NSThread.sleepForTimeInterval(1)
+        NSThread.sleepForTimeInterval(1)
         beforeOneRoundRcognition()
         
-        BDVoiceRecognitionClient.sharedInstance().setApiKey("8MAxI5o7VjKSZOKeBzS4XtxO", withSecretKey: "Ge5GXVdGQpaxOmLzc8fOM8309ATCz9Ha")
         setClientConfig()
         var status = Int(mVoiceRecognitionFileRecognizer!.startFileRecognition())
         if status != Int(EVoiceRecognitionStartWorking.value) {
@@ -277,12 +300,11 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
         mVoiceRecognitionFileRecognizer = BDVRFileRecognizer(fileRecognizerWithFilePath: fileFullPath, sampleRate: mCurrentSampleRate, propertyGroup: propList, cityID: cid, delegate: self)
         
         // congfig the recognizer
-        mVoiceRecognitionFileRecognizer!.appCode = "";
-        mVoiceRecognitionFileRecognizer!.licenseFilePath = NSBundle.mainBundle().pathForResource("bdasr_license", ofType: "dat")
+        BDVoiceRecognitionClient.sharedInstance().setApiKey("Hfda5OQKftXEUkjyzYhTW6Wk", withSecretKey: "fb0a3b19be7ebdeeb592978e1c2ce172")
+        mVoiceRecognitionFileRecognizer!.appCode = "6164553";
         mVoiceRecognitionFileRecognizer!.datFilePath = NSBundle.mainBundle().pathForResource("s_1", ofType: "")
         
         println(mVoiceRecognitionFileRecognizer!.datFilePath)
-        println(mVoiceRecognitionFileRecognizer!.licenseFilePath)
         if mTestConfig.testType == TestType.Input {
             // input
             mVoiceRecognitionFileRecognizer!.LMDatFilePath = NSBundle.mainBundle().pathForResource("s_2_InputMethod", ofType: "")
@@ -357,7 +379,6 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
     func beforeOneRoundRcognition() {
         let round = mCurrentFileIndex + 1
         mResponseTimeCounter.startValue = NSDate()
-        mRecognitionTimeCounter.startValue = NSDate()
         mIsFirstUpdate = true
         
         if mIsSingleFileTest {
@@ -377,29 +398,29 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
     
     func resolveRecognition(obj: AnyObject, isFinish: Bool) -> String {
         if isFinish {
-            println("[server return raw object is]: \(obj)")
+            println("[audio server return raw object is]: \(obj)")
         }
-        var tmpResult: String?
+        var tmpResult: String = ""
         switch mTestConfig.testType {
         case .Search:
-            var resultsArray: [String] = obj as [String]
+            var resultsArray: [String] = obj as! [String]
             tmpResult = resultsArray[0].stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
         case .Input:
             tmpResult = ""
             if !isFinish {
-                var candidates: [String] = obj as [String]
+                var candidates: [String] = obj as! [String]
                 tmpResult = candidates[0]
             } else {
                 // in the dic, key is recognition text, value is confidence
-                for resultSplit in obj as [[[String: Int]]]{
+                for resultSplit in obj as! [[[String: Int]]]{
                     // get first candidate
                     var firstCandidate = resultSplit[0]
                     var keyArray = Array(firstCandidate.keys)
-                    tmpResult = keyArray[0]
+                    tmpResult += keyArray[0]
                 }
             }
         case .Domain:
-            var rootArray = obj as [String]
+            var rootArray = obj as! [String]
             var nluResult = rootArray[0]
             // partial result is different from final ones
             if !isFinish {
@@ -408,9 +429,9 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
             } else {
                 // final result
                 var jsonError: NSError?
-                let nluResultJSON = NSJSONSerialization.JSONObjectWithData(nluResult.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!, options: NSJSONReadingOptions.MutableLeaves, error: &jsonError) as [String: AnyObject]
+                let nluResultJSON = NSJSONSerialization.JSONObjectWithData(nluResult.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!, options: NSJSONReadingOptions.MutableLeaves, error: &jsonError)as! [String: AnyObject]
                 // get item list, which is an jsonArray
-                let itemListArray = nluResultJSON["item"] as [String]
+                let itemListArray = nluResultJSON["item"] as! [String]
                 tmpResult = itemListArray[0]
                 if itemListArray.count > 1 {
                     // server result
@@ -420,7 +441,7 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
                     mNluOnlineResolveCounter.plusOneRoundValue(ONE_ROUND_RESULT.Fail.rawValue)
                 }
                 
-                let jsonRes = nluResultJSON["json_res"] as String
+                let jsonRes = nluResultJSON["json_res"] as! String
                 let domainName: String = resolveDomainFromJson(jsonRes)
                 println(domainName)
                 if isDomainCorrect(domainName, fileName: mCurrentFileName) {
@@ -432,8 +453,8 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
         default:
             break
         }
-        println(tmpResult!)
-        return getRidOfLicenseWarning(tmpResult!)
+        println(tmpResult)
+        return getRidOfLicenseWarning(tmpResult)
     }
     
     func getRidOfLicenseWarning(rawResult: String) -> String {
@@ -464,12 +485,12 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
         // ,\"intent\":\"open\",\"demand\":0}],\"parsed_text\":\"FM\"
         // ,\"raw_text\":\"FM\"}","item":["[百度语音试用服务122天后到期]FM"]}
         var jsonError: NSError?
-        let jsonResJSON = NSJSONSerialization.JSONObjectWithData(jsonResString.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!, options: NSJSONReadingOptions.MutableLeaves, error: &jsonError) as [String: AnyObject]
-        let resultArrayJSON = jsonResJSON["results"] as [AnyObject]
+        let jsonResJSON = NSJSONSerialization.JSONObjectWithData(jsonResString.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!, options: NSJSONReadingOptions.MutableLeaves, error: &jsonError) as! [String: AnyObject]
+        let resultArrayJSON = jsonResJSON["results"] as! [AnyObject]
         if resultArrayJSON.count > 0 {
             // bug, sometime the reuslt arry is empty
-            let oneResult = resultArrayJSON[0] as [String: AnyObject]
-            returnDomain = oneResult["domain"] as String
+            let oneResult = resultArrayJSON[0] as! [String: AnyObject]
+            returnDomain = oneResult["domain"] as! String
         }
         return returnDomain
     }
@@ -478,7 +499,7 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
         // get recognition time
         mRecognitionTimeCounter.finishValue = NSDate()
         if let date = mRecognitionTimeCounter.finishValue as? NSDate {
-            mRecognitionTimeCounter.plusOneRoundValue(date.timeIntervalSinceDate(mRecognitionTimeCounter.startValue as NSDate))
+            mRecognitionTimeCounter.plusOneRoundValue(date.timeIntervalSinceDate(mRecognitionTimeCounter.startValue as! NSDate))
         }
         
         // write result to output file
@@ -516,7 +537,6 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
             // just start another round recognition
             startOneRoundRecognition()
         } else {
-            generateSendPackage()
             // one round auto test over
             switch mTestConfig.testSampleRate {
             case TEST_CONFIG_SAMPLERATE_8K:
@@ -557,13 +577,13 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
             // [add 2015/01/26] in domain test, we need word accuracy.
             // mReconigtionResult could be null, because in nlu mode, there is
             // a likelihood that mReconigtionResult can't be resolved correctly
-            mInputRecognitionResultsJsonArray!.append(mCurrentFileName + ":" + mCurrentRecognition)
+            mInputRecognitionResultsJsonArray.append(mCurrentFileName + ":" + mCurrentRecognition)
         }
     }
     
     func afterOneRoundTask() {
         // transform the json object into string
-        mUploadContent = NSString(data: NSJSONSerialization.dataWithJSONObject(mUploadRecognitionResultsJsonObject!, options: NSJSONWritingOptions.PrettyPrinted, error: nil)!, encoding: NSUTF8StringEncoding)!
+        mUploadContent = NSString(data: NSJSONSerialization.dataWithJSONObject(mUploadJson, options: NSJSONWritingOptions.PrettyPrinted, error: nil)!, encoding: NSUTF8StringEncoding)! as String
         var uploadRecognitionResultOperation: CalculateWordAccuracyOperation
         if mTestConfig.testType == TestType.Search {
             // for now, search mode doesn't need send result to server
@@ -575,11 +595,6 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
                 withContent: mUploadContent, toUrl:INPUT_URL, delegate: self)
             uploadRecognitionResultOperation.send()
         }
-        resetTaskVariable()
-    }
-    
-    func resetTaskVariable() {
-        mUploadRecognitionResultsJsonObject = nil
     }
     
     func showTestResult(displayer8k: ResultDisplayer?, displayer16k: ResultDisplayer?) {
@@ -594,18 +609,23 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
     }
     
     func afterOneRoundAutotest() {
+        self.checkPerformanceThread?.stopChecking()
+        
         setDisplayer(mCurrentSampleRate)
-        mInputRecognitionResultsJsonArray = nil
+        generateSendPackage()
+        mInputRecognitionResultsJsonArray.removeAll(keepCapacity: false)
     }
     
     func setDisplayer(sampleRate: Int32) {
         if mCurrentSampleRate == Int32(TEST_CONFIG_SAMPLERATE_8K) {
             // 8k result displayer
             m8kDisplayer = ResultDisplayer()
-            m8kDisplayer!.accuracyRate = String(format: "准确率: %1.2f", mAccurateRateCounter.getAverValue())
-            m8kDisplayer!.successRate = String(format: "识别率: %1.2f", mSuccessRateCounter.getAverValue())
-            m8kDisplayer!.responseTime = String(format: "响应时间: %1.2fs", mResponseTimeCounter.getAverValue())
-            m8kDisplayer!.recognitionTime = String(format: "识别时间: %1.2fs", mRecognitionTimeCounter.getAverValue())
+            m8kDisplayer!.accuracyRate = String(format: "%1.2f", mAccurateRateCounter.getAverValue())
+            m8kDisplayer!.successRate = String(format: "%1.2f", mSuccessRateCounter.getAverValue())
+            m8kDisplayer!.responseTime = String(format: "%1.2fs", mResponseTimeCounter.getAverValue())
+            m8kDisplayer!.recognitionTime = String(format: "%1.2fs", mRecognitionTimeCounter.getAverValue())
+            m8kDisplayer!.memoryUsage = String(format: "%1.2fK", mMemCounter.getAverValue())
+            m8kDisplayer!.cpuUsage = String(format: "%1.2f%%", mCpuCounter.getAverValue())
         } else {
             // 16k
             if mTestConfig.testType == TestType.Domain {
@@ -613,58 +633,65 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
             } else {
                 m16kDisplayer = ResultDisplayer()
             }
-            m16kDisplayer!.accuracyRate = String(format: "准确率: %1.2f", mAccurateRateCounter.getAverValue())
-            m16kDisplayer!.successRate = String(format: "识别率: %1.2f", mSuccessRateCounter.getAverValue())
-            m16kDisplayer!.responseTime = String(format: "响应时间: %1.2fs", mResponseTimeCounter.getAverValue())
-            m16kDisplayer!.recognitionTime = String(format: "识别时间: %1.2fs", mRecognitionTimeCounter.getAverValue())
+            m16kDisplayer!.accuracyRate = String(format: "%1.2f", mAccurateRateCounter.getAverValue())
+            m16kDisplayer!.successRate = String(format: "%1.2f", mSuccessRateCounter.getAverValue())
+            m16kDisplayer!.responseTime = String(format: "%1.2fs", mResponseTimeCounter.getAverValue())
+            m16kDisplayer!.recognitionTime = String(format: "%1.2fs", mRecognitionTimeCounter.getAverValue())
+            m16kDisplayer!.memoryUsage = String(format: "%1.2fK", mMemCounter.getAverValue())
+            m16kDisplayer!.cpuUsage = String(format: "%1.2f%%", mCpuCounter.getAverValue())
             if let displayer = m16kDisplayer as? DomainResultDisplayer {
-                displayer.nluAccurateRate = String(format: "nlu准确率: %1.2f", mNluAccurateCounter.getAverValue())
-                displayer.nluOnlineRate = String(format: "server识别占比: %1.2f", mNluOnlineResolveCounter.getAverValue())
+                displayer.nluAccurateRate = String(format: "%1.2f", mNluAccurateCounter.getAverValue())
+                displayer.nluOnlineRate = String(format: "%1.2f", mNluOnlineResolveCounter.getAverValue())
             }
         }
     }
     
     func generateSendPackage() {
-        mUploadRecognitionResultsJsonObject!["mail_prefix"] = "lisheng02"
+        mUploadJson["mail_prefix"] = "lisheng02"
         if mTestConfig.testType == TestType.Search {
             // the uploaded package for search mode
             switch mCurrentSampleRate {
             case Int32(TEST_CONFIG_SAMPLERATE_8K):
                 var result8kJson: [String: String] = [String: String]()
-                result8kJson["[Success Rate]"] = String(format: "%1.2f", mSuccessRateCounter.getAverValue())
-                result8kJson["[Accuracy Rate]"] = String(format: "%1.2f", mAccurateRateCounter.getAverValue())
-                result8kJson["[Response Rate]"] = String(format: "%1.2f", mResponseTimeCounter.getAverValue())
-                result8kJson["[Recognition Rate]"] = String(format: "%1.2f", mRecognitionTimeCounter.getAverValue())
-                let result8kJsonData = NSJSONSerialization.dataWithJSONObject(result8kJson, options: NSJSONWritingOptions.PrettyPrinted, error: nil)!
-                mUploadRecognitionResultsJsonObject!["result_8k"] = NSString(data: result8kJsonData, encoding: NSUTF8StringEncoding)
+                result8kJson["SuccessRate"] = m8kDisplayer!.successRate
+                result8kJson["AccuracyRate"] = m8kDisplayer!.accuracyRate
+                result8kJson["ResponseTime"] = m8kDisplayer!.responseTime
+                result8kJson["RecognitionTime"] = m8kDisplayer!.recognitionTime
+                result8kJson["MEM"] = m8kDisplayer!.memoryUsage
+                result8kJson["CPU"] = m8kDisplayer!.cpuUsage
+                mUploadJson["result_8k"] = result8kJson
             case Int32(TEST_CONFIG_SAMPLERATE_16K):
                 var result16kJson: [String: String] = [String: String]()
-                result16kJson["[Success Rate]"] = String(format: "%1.2f", mSuccessRateCounter.getAverValue())
-                result16kJson["[Accuracy Rate]"] = String(format: "%1.2f", mAccurateRateCounter.getAverValue())
-                result16kJson["[Response Rate]"] = String(format: "%1.2f", mResponseTimeCounter.getAverValue())
-                result16kJson["[Recognition Rate]"] = String(format: "%1.2f", mRecognitionTimeCounter.getAverValue())
-                let result16kJsonData = NSJSONSerialization.dataWithJSONObject(result16kJson, options: NSJSONWritingOptions.PrettyPrinted, error: nil)!
-                mUploadRecognitionResultsJsonObject!["result_16k"] = NSString(data: result16kJsonData, encoding: NSUTF8StringEncoding)
+                result16kJson["SuccessRate"] = m16kDisplayer!.successRate
+                result16kJson["AccuracyRate"] = m16kDisplayer!.accuracyRate
+                result16kJson["ResponseTime"] = m16kDisplayer!.responseTime
+                result16kJson["RecognitionTime"] = m16kDisplayer!.recognitionTime
+                result16kJson["MEM"] = m16kDisplayer!.memoryUsage
+                result16kJson["CPU"] = m16kDisplayer!.cpuUsage
+                mUploadJson["result_16k"] = result16kJson
             default:
                 break
             }
         } else {
-            // the uploaded package for modes that need to get word accuracy, such as input and domain
+            // the uploaded package for modes that need to get word accuracy, such as
+            // input and domain
             switch mCurrentSampleRate {
             case Int32(TEST_CONFIG_SAMPLERATE_8K):
-                let result8kJsonData = NSJSONSerialization.dataWithJSONObject(mInputRecognitionResultsJsonArray!, options: NSJSONWritingOptions.PrettyPrinted, error: nil)!
-                mUploadRecognitionResultsJsonObject!["8k_result"] = NSString(data: result8kJsonData, encoding: NSUTF8StringEncoding)
-                mUploadRecognitionResultsJsonObject!["8k_success_rate"] = String(format: "%1.2f", mSuccessRateCounter.getAverValue())
-                mUploadRecognitionResultsJsonObject!["8k_recognition_time"] = String(format: "%1.2f", mRecognitionTimeCounter.getAverValue())
-                mUploadRecognitionResultsJsonObject!["8k_response_time"] = String(format: "%1.2f", mResponseTimeCounter.getAverValue())
+                mUploadJson["8k_result"] = mInputRecognitionResultsJsonArray
+                mUploadJson["8k_success_rate"] = m8kDisplayer!.successRate
+                mUploadJson["8k_recognition_time"] = m8kDisplayer!.recognitionTime
+                mUploadJson["8k_response_time"] = m8kDisplayer!.responseTime
+                mUploadJson["8k_mem_usage"] = m8kDisplayer!.memoryUsage
+                mUploadJson["8k_cpu_usage"] = m8kDisplayer!.cpuUsage
             case Int32(TEST_CONFIG_SAMPLERATE_16K):
-                let result16kJsonData = NSJSONSerialization.dataWithJSONObject(mInputRecognitionResultsJsonArray!, options: NSJSONWritingOptions.PrettyPrinted, error: nil)!
-                mUploadRecognitionResultsJsonObject!["16k_result"] = NSString(data: result16kJsonData, encoding: NSUTF8StringEncoding)
-                mUploadRecognitionResultsJsonObject!["16k_success_rate"] = String(format: "%1.2f", mSuccessRateCounter.getAverValue())
-                mUploadRecognitionResultsJsonObject!["16k_recognition_time"] = String(format: "%1.2f", mRecognitionTimeCounter.getAverValue())
-                mUploadRecognitionResultsJsonObject!["16k_response_time"] = String(format: "%1.2f", mResponseTimeCounter.getAverValue())
+                mUploadJson["16k_result"] = mInputRecognitionResultsJsonArray
+                mUploadJson["16k_success_rate"] = m16kDisplayer!.successRate
+                mUploadJson["16k_recognition_time"] = m16kDisplayer!.recognitionTime
+                mUploadJson["16k_response_time"] = m16kDisplayer!.responseTime
+                mUploadJson["16k_mem_usage"] = m16kDisplayer!.memoryUsage
+                mUploadJson["16k_cpu_usage"] = m16kDisplayer!.cpuUsage
                 if mTestConfig.testType == TestType.Domain {
-                    mUploadRecognitionResultsJsonObject!["16k_nlu_triggered_rate"] = String(format: "%1.2f", mNluAccurateCounter.getAverValue())
+                    mUploadJson["16k_nlu_triggered_rate"] = String(format: "%1.2f", mNluAccurateCounter.getAverValue())
                 }
             default:
                 break
@@ -680,59 +707,61 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
     
     // MARK: - MVoiceRecognitionClientDelegate
     
-    func VoiceRecognitionClientWorkStatus(aStatus: Int, obj aObj: AnyObject) {
+    func VoiceRecognitionClientWorkStatus(aStatus: Int32, obj aObj: AnyObject!) {
         switch aStatus {
-        case Int(EVoiceRecognitionClientWorkStatusStartWorkIng.value):
+        case Int32(EVoiceRecognitionClientWorkStatusStartWorkIng.value):
             // start working
-            ()
-        case Int(EVoiceRecognitionClientWorkStatusStart.value):
+            updateUI("开始工作", label: mLabelTestProgress)
+        case Int32(EVoiceRecognitionClientWorkStatusStart.value):
             updateUI("检测到用户说话", label: mLabelTestProgress)
-        case Int(EVoiceRecognitionClientWorkStatusEnd.value):
+        case Int32(EVoiceRecognitionClientWorkStatusEnd.value):
             updateUI("录音结束，等待服务器", label: mLabelTestProgress)
-        case Int(EVoiceRecognitionClientWorkStatusFlushData.value):
+            mRecognitionTimeCounter.startValue = NSDate()
+        case Int32(EVoiceRecognitionClientWorkStatusFlushData.value):
             updateUI("连续上屏", label: mLabelTestProgress)
             // partial result
             if mIsFirstUpdate {
                 mResponseTimeCounter.finishValue = NSDate()
                 if let date = mResponseTimeCounter.finishValue as? NSDate {
-                    mResponseTimeCounter.plusOneRoundValue(date.timeIntervalSinceDate(mResponseTimeCounter.startValue as NSDate))
+                    mResponseTimeCounter.plusOneRoundValue(date.timeIntervalSinceDate(mResponseTimeCounter.startValue as! NSDate))
                 }
                 mIsFirstUpdate = false
             }
             mCurrentRecognition = resolveRecognition(aObj, isFinish: false)
             updateUI(mCurrentRecognition, label: mLabelRecognitionResult)
-        case Int(EVoiceRecognitionClientWorkStatusFinish.value):
+        case Int32(EVoiceRecognitionClientWorkStatusFinish.value):
             // update ui state first
             updateUI("识别结束", label: mLabelTestProgress)
             // final result
             mCurrentRecognition = resolveRecognition(aObj, isFinish: true)
             updateUI(mCurrentRecognition, label: mLabelRecognitionResult)
             afterOneRoundRecognition(true)
-        case Int(EVoiceRecognitionClientWorkStatusError.value):
+        case Int32(EVoiceRecognitionClientWorkStatusError.value):
             updateUI("识别出错", label: mLabelTestProgress)
             afterOneRoundRecognition(false)
         default:
             break
         }
+
     }
     
-    func VoiceRecognitionClientErrorStatus(aStatus: Int, subStatus aSubStatus: Int) {
+    func VoiceRecognitionClientErrorStatus(aStatus: Int32, subStatus aSubStatus: Int32) {
         println("error happens")
         var errorInfo: String = mCurrentFileName + ": "
         switch aStatus {
-        case Int(EVoiceRecognitionClientErrorStatusClassVDP.value):
+        case Int32(EVoiceRecognitionClientErrorStatusClassVDP.value):
             errorInfo += ("audio process happens: " + String(aSubStatus))
             println("audio process happens: " + String(aSubStatus))
             break
-        case Int(EVoiceRecognitionClientErrorStatusClassRecord.value):
+        case Int32(EVoiceRecognitionClientErrorStatusClassRecord.value):
             errorInfo += ("audio record error happens: " + String(aSubStatus))
             println("audio record error happens: " + String(aSubStatus))
             break
-        case Int(EVoiceRecognitionClientErrorStatusClassLocalNet.value):
+        case Int32(EVoiceRecognitionClientErrorStatusClassLocalNet.value):
             errorInfo += ("network error: " + String(aSubStatus))
             println("network error: " + String(aSubStatus))
             break
-        case Int(EVoiceRecognitionClientErrorStatusClassServerNet.value):
+        case Int32(EVoiceRecognitionClientErrorStatusClassServerNet.value):
             errorInfo += ("server error: " + String(aSubStatus))
             println("engine error: " + String(aSubStatus))
             break
@@ -740,28 +769,46 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
             break
         }
         errorOutputFileHandler.writeLine(errorInfo)
+
     }
     
-    func VoiceRecognitionClientNetWorkStatus(aStatus: Int) {
+    func VoiceRecognitionClientNetWorkStatus(aStatus: Int32) {
+        
     }
     
     // MARK: - VTResponseDelegate
     
     func onResponseGotten(response: AnyObject) {
-        let dic: [String: String] = response as [String: String]
+        let dic: [String: AnyObject] = response as! [String: AnyObject]
         for (key, value) in dic {
             switch key {
             case RESPONSE_8K_ACCURACY_KEY:
                 if let displayer8K = m8kDisplayer {
                     // sample rate 8k test
-                    displayer8K.accuracyRate = "准确率: " + value
+                    displayer8K.accuracyRate = value as! String
                 }
-            default:
+            case RESPONSE_16K_ACCURACY_KEY:
                 // RESPONSE_16K_ACCURACY_KEY
                 if let displayer16K = m16kDisplayer {
                     // sample rate 16k test
-                    displayer16K.accuracyRate = "准确率: " + value
+                    displayer16K.accuracyRate = value as! String
                 }
+            case RESPONSE_LAST_VERSION_KEY:
+                // RESPONSE_LAST_VERSION_KEY
+                if let lastDatas = value as? [[String: String]] {
+                    for oneSampleRateData in lastDatas {
+                        switch oneSampleRateData[StatKey.SAMPLE_RATE.rawValue]! {
+                        case "8k":
+                            lastVersonData.inflateData(KEY_8K_DATA, lastVersionData: oneSampleRateData)
+                        case "16k":
+                            lastVersonData.inflateData(KEY_16K_DATA, lastVersionData: oneSampleRateData)
+                        default:
+                            break
+                        }
+                    }
+                }
+            default:
+                break
             }
         }
         showTestResult(m8kDisplayer, displayer16k: m16kDisplayer)
@@ -773,10 +820,22 @@ class TestViewController: UIViewController, MVoiceRecognitionClientDelegate, VTR
             updateUI("发送测试结果网络连接错误", label: mLabelTestProgress)
             break
         case VTResponseError.VTResponseResolutionError:
-            updateUI("测试结果格式有误", label: mLabelTestProgress)
+            updateUI("测试服务器返回结果格式有误", label: mLabelTestProgress)
             break
         default:
             break
+        }
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "segue_detail_stat" {
+            let detailVC = segue.destinationViewController as! DetailResultViewController
+            detailVC.pageTitles = ["response time", "mem usage", "cpu usage"]
+            detailVC.pageValues = [
+                mResponseTimeCounter.getHistoryValue(),
+                mMemCounter.getHistoryValue(),
+                mCpuCounter.getHistoryValue()
+            ]
         }
     }
     

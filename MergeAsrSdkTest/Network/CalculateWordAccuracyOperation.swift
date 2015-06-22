@@ -21,8 +21,9 @@ enum VTResponseError {
 let RESPONSE_ACCURACY_UNDEFINED: String = "-1"
 let RESPONSE_8K_ACCURACY_KEY: String = "8k_accuracy"
 let RESPONSE_16K_ACCURACY_KEY: String = "16k_accuracy"
-let INPUT_URL: String = "http://cp01-sys-razzjunheng-jxaibq423.cp01.baidu.com:8081/handle_sdk_result/handle_input_result.php"
-let SEARCH_URL: String = "http://cp01-sys-razzjunheng-jxaibq423.cp01.baidu.com:8081/handle_sdk_result/handle_search_result.php"
+let RESPONSE_LAST_VERSION_KEY: String = "last_version_info"
+let INPUT_URL: String = "http://cp01-sys-razzjunheng-jxaibq423.cp01.baidu.com:8081/handle_sdk_result/input_result_handler.php"
+let SEARCH_URL: String = "http://cp01-sys-razzjunheng-jxaibq423.cp01.baidu.com:8081/handle_sdk_result/search_result_handler.php"
 
 class CalculateWordAccuracyOperation {
 
@@ -52,7 +53,7 @@ class CalculateWordAccuracyOperation {
                 // send success
                 println("send request success")
                 var jsonError: NSError?
-                let responseDic: [String: String]? = NSJSONSerialization.JSONObjectWithData(returnData, options: NSJSONReadingOptions.MutableLeaves, error: &jsonError) as? [String: String]
+                let responseDic: [String: AnyObject]? = NSJSONSerialization.JSONObjectWithData(returnData, options: NSJSONReadingOptions.MutableLeaves, error: &jsonError) as? [String: AnyObject]
                 if let dic = responseDic {
                     println("get calculate result from server success")
                     for (key, value) in dic {

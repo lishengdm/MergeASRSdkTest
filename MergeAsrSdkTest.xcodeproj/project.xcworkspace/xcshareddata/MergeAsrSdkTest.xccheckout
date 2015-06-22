@@ -7,37 +7,93 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>070188AF-BEA2-4373-8DCB-AC64B2476A4F</string>
 	<key>IDESourceControlProjectName</key>
-	<string>MergeAsrSdkTest</string>
+	<string>project</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
+		<key>67620B5EFA902936DF04070AF595B76AB0333747</key>
+		<string>https://github.com/Alamofire/Alamofire.git</string>
+		<key>9025163822AAEA7A2D8AC9210D0874A56F62B462</key>
+		<string>https://github.com/danielgindi/ios-charts.git</string>
 		<key>9CE0FBD23DA918BCAF5D5C9BCC61E2276E10DFE2</key>
-		<string>https://svn.baidu.com/ps-test/rank</string>
+		<string>https://github.com/lishengdm/MergeASRSdkTest.git</string>
+		<key>b9e191d0-3251-468d-98e2-6e71b33e397e++2474</key>
+		<string>https://svn.baidu.com/ps-test/rank/trunk/audio/sdk_test/for_rd_use/ios/recognition_merge/MergeAsrSdkTest/Alamofire</string>
+		<key>b9e191d0-3251-468d-98e2-6e71b33e397e++5377</key>
+		<string>https://svn.baidu.com/ps-test/rank/trunk/audio/sdk_test/for_rd_use/ios/recognition_merge/MergeAsrSdkTest</string>
+		<key>b9e191d0-3251-468d-98e2-6e71b33e397e++8776</key>
+		<string>https://svn.baidu.com/ps-test/rank/trunk/audio/sdk_test/for_rd_use/ios/recognition_merge/MergeAsrSdkTest/ios-charts</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>MergeAsrSdkTest.xcodeproj</string>
+	<string>MergeAsrSdkTest.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
+		<key>67620B5EFA902936DF04070AF595B76AB0333747</key>
+		<string>../..Alamofire/</string>
+		<key>9025163822AAEA7A2D8AC9210D0874A56F62B462</key>
+		<string>../..ios-charts/</string>
 		<key>9CE0FBD23DA918BCAF5D5C9BCC61E2276E10DFE2</key>
 		<string>../..</string>
+		<key>b9e191d0-3251-468d-98e2-6e71b33e397e++2474</key>
+		<string>../..Alamofire/</string>
+		<key>b9e191d0-3251-468d-98e2-6e71b33e397e++5377</key>
+		<string>../..</string>
+		<key>b9e191d0-3251-468d-98e2-6e71b33e397e++8776</key>
+		<string>../..ios-charts/</string>
 	</dict>
 	<key>IDESourceControlProjectRepositoryRootDictionary</key>
 	<dict>
-		<key>9CE0FBD23DA918BCAF5D5C9BCC61E2276E10DFE2</key>
+		<key>b9e191d0-3251-468d-98e2-6e71b33e397e++2474</key>
+		<string>https://svn.baidu.com/ps-test/rank</string>
+		<key>b9e191d0-3251-468d-98e2-6e71b33e397e++5377</key>
+		<string>https://svn.baidu.com/ps-test/rank</string>
+		<key>b9e191d0-3251-468d-98e2-6e71b33e397e++8776</key>
 		<string>https://svn.baidu.com/ps-test/rank</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>https://svn.baidu.com/ps-test/rank/trunk/audio/sdk_test/for_rd_use/ios/recognition_merge/MergeAsrSdkTest/MergeAsrSdkTest.xcodeproj</string>
+	<string>https://svn.baidu.com/ps-test/rank/trunk/audio/sdk_test/for_rd_use/ios/recognition_merge/MergeAsrSdkTest/MergeAsrSdkTest.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>9CE0FBD23DA918BCAF5D5C9BCC61E2276E10DFE2</string>
+	<string>b9e191d0-3251-468d-98e2-6e71b33e397e++5377</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.subversion</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>9CE0FBD23DA918BCAF5D5C9BCC61E2276E10DFE2</string>
+			<string>b9e191d0-3251-468d-98e2-6e71b33e397e++2474</string>
+			<key>IDESourceControlWCCName</key>
+			<string>Alamofire</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>67620B5EFA902936DF04070AF595B76AB0333747</string>
+			<key>IDESourceControlWCCName</key>
+			<string>Alamofire</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>9025163822AAEA7A2D8AC9210D0874A56F62B462</string>
+			<key>IDESourceControlWCCName</key>
+			<string>ios-charts</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.subversion</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>b9e191d0-3251-468d-98e2-6e71b33e397e++8776</string>
+			<key>IDESourceControlWCCName</key>
+			<string>ios-charts</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.subversion</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>b9e191d0-3251-468d-98e2-6e71b33e397e++5377</string>
 			<key>IDESourceControlWCCName</key>
 			<string>MergeASRSdkTest</string>
 		</dict>

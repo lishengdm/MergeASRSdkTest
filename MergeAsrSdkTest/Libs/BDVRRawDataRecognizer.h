@@ -27,17 +27,6 @@
 /**
  * @brief 初始化识别器
  *
- * @param filePath 文件路径
- *
- * @param sampleRate 采样率
- *
- * @param property 识别模式
- */
-- (id)initRecognizerWithSampleRate:(int)rate property:(TBDVoiceRecognitionProperty)property delegate:(id<MVoiceRecognitionClientDelegate>)delegate __attribute__((deprecated));
-
-/**
- * @brief 初始化识别器
- *
  * @param rate 采样率
  * @param propList 识别属性数组
  * @param cid 城市ID

@@ -18,6 +18,7 @@ var KEY_TEST_DOMAIN: String = "test_domain"
 var KEY_TEST_SAMPLE_RATE: String = "test_sample_rate"
 var KEY_TEST_NUMBER: String = "test_number"
 var KEY_SINGLE_TEST_FILE_NAME: String = "single_test_file_name"
+var KEY_TEST_SET_VERSION: String = "test_set_version"
 
 let TEST_SAMPLE_RATE_VALUE_ARRAY: [Int] = [8000, 16000, 0]
 let TEST_SAMPLE_RATE_NAME_ARRAY: [String] = ["8k", "16k", "8k && 16k"]
@@ -43,7 +44,12 @@ class ValuePickerTableViewController: UITableViewController, UITextFieldDelegate
     var lastSelectCellIndexPath: NSIndexPath? = nil
     var currentCell: UITableViewCell!
     
-    override func viewDidLoad() {}
+    override func viewDidLoad() {
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        self.tabBarController?.tabBar.hidden = true
+    }
     
     func setSettingType(type: SettingType) {
         currentSettingType = type
@@ -88,17 +94,17 @@ class ValuePickerTableViewController: UITableViewController, UITextFieldDelegate
         
         switch currentSettingType {
         case .SettingTypeDomain:
-            cell = tableView.dequeueReusableCellWithIdentifier("cell_value_picker", forIndexPath: indexPath) as UITableViewCell
+            cell = tableView.dequeueReusableCellWithIdentifier("cell_value_picker", forIndexPath: indexPath) as! UITableViewCell
             currentNameArray = TEST_DOMAIN_NAME_ARRAY
             currentValueArray = TEST_DOMAIN_VALUE_ARRAY
             cell.textLabel?.text = currentNameArray![indexPath.row]
         case .SettingTypeSampleRate:
-            cell = tableView.dequeueReusableCellWithIdentifier("cell_value_picker", forIndexPath: indexPath) as UITableViewCell
+            cell = tableView.dequeueReusableCellWithIdentifier("cell_value_picker", forIndexPath: indexPath) as! UITableViewCell
             currentNameArray = TEST_SAMPLE_RATE_NAME_ARRAY
             currentValueArray = TEST_SAMPLE_RATE_VALUE_ARRAY
             cell.textLabel?.text = currentNameArray![indexPath.row]
         case .SettingTypeNumber:
-            var tcell: SingleEditorTableViewCell = tableView.dequeueReusableCellWithIdentifier("cell_value_editor", forIndexPath: indexPath) as SingleEditorTableViewCell
+            var tcell: SingleEditorTableViewCell = tableView.dequeueReusableCellWithIdentifier("cell_value_editor", forIndexPath: indexPath) as! SingleEditorTableViewCell
             tcell.textViewTestNumber.delegate = self
             cell = tcell
         default:
@@ -150,7 +156,7 @@ class ValuePickerTableViewController: UITableViewController, UITextFieldDelegate
 
     // MARK: - TextFieldDelegate
     
-    override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+    override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
         dismissKeyboard(currentSettingType, withCell: currentCell)
     }
     
@@ -173,6 +179,11 @@ class ValuePickerTableViewController: UITableViewController, UITextFieldDelegate
         }
     }
     
+    // MARK : ibaction
+    
+    @IBAction func backToParent(sender: AnyObject) {
+        self.presentingViewController?.dismissViewControllerAnimated(true, completion:nil)
+    }
     /*
     // MARK: - Navigation
 

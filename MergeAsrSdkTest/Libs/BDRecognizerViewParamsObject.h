@@ -9,6 +9,7 @@
 // 头文件
 #import <Foundation/Foundation.h>
 #import "BDVoiceRecognitionClient.h"
+#import "BDVRProperties.h"
 
 // 枚举 - 弹窗中连续上屏效果开关
 typedef enum
@@ -25,13 +26,6 @@ typedef enum
     EBDRecognizerPlayTonesRecordPlay = 1,                          //  提示音开启
 } TBDRecognizerPlayTones;
 
-// 枚举 - 设置识别语言
-typedef enum
-{
-    BDVoiceRecognitionLanguageChinese = 0,
-    BDVoiceRecognitionLanguageCantonese,
-    BDVoiceRecognitionLanguageEnglish,
-} TBDVoiceRecognitionLanguage;
 
 // @class - BDRecognizerViewParamsObject
 // @brief - 语音识别弹窗参数配置类
@@ -42,7 +36,6 @@ typedef enum
 @property (nonatomic, copy) NSString *secretKey;  // 开发者secretKey，在百度开放平台申请
 @property (nonatomic) BOOL isNeedNLU;  // 是否请求语义解析，只对搜索模式有影响
 @property (nonatomic) TBDVoiceRecognitionLanguage language;   // 识别语言
-@property (nonatomic) TBDVoiceRecognitionProperty recognitionProperty DEPRECATED_ATTRIBUTE;  // 识别模式
 @property (nonatomic, copy) NSArray *recogPropList; // 识别模式
 @property (nonatomic) NSInteger cityID; // 城市标识
 @property (nonatomic) TBDVoiceRecognitionResourceType resourceType; // 资源类型
@@ -61,7 +54,9 @@ typedef enum
 @property (nonatomic, copy) NSArray *tipsList; // 提示语列表
 @property (nonatomic) BOOL isNeedVad; // 是否需要对录音数据进行端点检测
 @property (nonatomic) BOOL isNeedCompress; // 是否需要对录音数据进行压缩
-@property (nonatomic) TBDVoiceRecognitionStrategy recogStrategy; // 识别策略
+@property (nonatomic) TBDVoiceRecognitionStrategy recogStrategy; // 识别策略,TBDVoiceRecognitionStrategy
+@property (nonatomic) BOOL supportRetry; // Effective when recogStrategy == RECOGNITION_STRATEGY_ONLINE
+                                            // How many times we will retry in case of networking error. Default 1.
 @property (nonatomic) NSTimeInterval onlineWaitTime; //在线识别的等待时间
 @property (nonatomic, copy) NSString* appCode; // 用户获取的appCode
 @property (nonatomic, copy) NSString* licenseFilePath; // 授权文件路径

@@ -31,7 +31,6 @@ class SettingTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -45,6 +44,7 @@ class SettingTableViewController: UITableViewController {
     }
     
     override func viewWillAppear(animated: Bool) {
+        self.tabBarController?.tabBar.hidden = false
         setDetails()
     }
     
@@ -63,15 +63,8 @@ class SettingTableViewController: UITableViewController {
         }
     }
     
-    // MARK: - Navigattion
-    
-    @IBAction func backToPreviousController(sender: AnyObject) {
-        self.presentingViewController?.dismissViewControllerAnimated(true, completion:nil)
-    }
-
-    
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        var valuePickerController: ValuePickerTableViewController = segue.destinationViewController as ValuePickerTableViewController
+        var valuePickerController: ValuePickerTableViewController = segue.destinationViewController as! ValuePickerTableViewController
         var settingType: SettingType?
         switch(segue.identifier!) {
         case "test_domain":

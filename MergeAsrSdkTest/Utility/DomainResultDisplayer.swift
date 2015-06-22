@@ -21,6 +21,9 @@ class DomainResultDisplayer: ResultDisplayer {
     }
     
     override func toString() -> String {
-        return super.toString() + "\n" + nluTriggerRate + "\n" + nluAccurateRate + "\n" + nluOnlineRate
+        return super.toString() + "\n"
+            + "nlu触发率:" + nluTriggerRate + "\n"
+            + "nlu准确率:" + nluAccurateRate + "\n"
+            + "在线nlu比率:" + nluOnlineRate
     }
 }

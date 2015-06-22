@@ -15,22 +15,36 @@ enum ONE_ROUND_RESULT: Double {
 
 class TestInfoCounter {
     
-    var currentRound: Double = 0
-    var totalValue: Double = 0
+    private var currentRound: Double = 0
+    private var totalValue: Double = 0
     var startValue: Any?
     var finishValue: Any?
+    private var needHistory: Bool = false
+    lazy var history: [Double] = []
     
-    init() {
+    convenience init() {
+        self.init(needHistory: false)
+    }
+    
+    init(needHistory: Bool) {
+        self.needHistory = needHistory
     }
     
     func plusOneRoundValue(oneRoundValue: Double) {
         totalValue += oneRoundValue;
         currentRound++;
+        if self.needHistory {
+            self.history.append(oneRoundValue)
+        }
     }
     
     func resetCounter() {
         currentRound = 0
         totalValue = 0
+    }
+    
+    func getHistoryValue() -> [Double] {
+        return self.history
     }
     
     func getAverValue() -> Double {

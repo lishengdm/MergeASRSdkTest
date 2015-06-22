@@ -14,21 +14,6 @@
 
 @property (nonatomic, retain) NSString *filePath;
 
-/**
- * @brief 初始化文件识别器
- *
- * @param filePath 文件路径
- *
- * @param sampleRate 采样率
- *
- * @param mode 识别模式
- *
- * @param delegate 代理对象
- *
- * @return 状态码
- */
-- (id)initFileRecognizerWithFilePath:(NSString *)filePath sampleRate:(int)rate property:(TBDVoiceRecognitionProperty)property delegate:(id<MVoiceRecognitionClientDelegate>)delegate __attribute__((deprecated));
-
 
 /**
  * @brief 初始化文件识别器
