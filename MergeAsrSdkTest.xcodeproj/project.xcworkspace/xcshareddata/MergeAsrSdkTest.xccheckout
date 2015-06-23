@@ -7,7 +7,7 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>070188AF-BEA2-4373-8DCB-AC64B2476A4F</string>
 	<key>IDESourceControlProjectName</key>
-	<string>project</string>
+	<string>MergeAsrSdkTest</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>67620B5EFA902936DF04070AF595B76AB0333747</key>
@@ -24,7 +24,7 @@
 		<string>https://svn.baidu.com/ps-test/rank/trunk/audio/sdk_test/for_rd_use/ios/recognition_merge/MergeAsrSdkTest/ios-charts</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>MergeAsrSdkTest.xcodeproj/project.xcworkspace</string>
+	<string>MergeAsrSdkTest.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>67620B5EFA902936DF04070AF595B76AB0333747</key>
@@ -50,7 +50,7 @@
 		<string>https://svn.baidu.com/ps-test/rank</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>https://svn.baidu.com/ps-test/rank/trunk/audio/sdk_test/for_rd_use/ios/recognition_merge/MergeAsrSdkTest/MergeAsrSdkTest.xcodeproj/project.xcworkspace</string>
+	<string>https://svn.baidu.com/ps-test/rank/trunk/audio/sdk_test/for_rd_use/ios/recognition_merge/MergeAsrSdkTest/MergeAsrSdkTest.xcodeproj</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
